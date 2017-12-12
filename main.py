@@ -5,6 +5,8 @@ import sonar_sensor_module as sensor
 import curses
 from custom_thread import WhileTrueThread
 
+from time import sleep
+
 def deinit_modules() :
     car.deinit()
     interface.deinit()
@@ -29,7 +31,7 @@ class InputThread (WhileTrueThread) :
 
 class CarThread (WhileTrueThread) :
     def __init__(self, control_values) :
-        WhileTrueThread.__init__(self, 0)
+        WhileTrueThread.__init__(self, 0.1)
         self.__control_values = control_values
 
     def _loop(self) :
@@ -53,10 +55,11 @@ class CarThread (WhileTrueThread) :
 
 class SonarSensorThread(WhileTrueThread):
         def __init__(self) :
-            WhileTrueThread.__init__(self, 0)
+            WhileTrueThread.__init__(self, 0.1)
             
         def _loop(self):
             front_distance = sensor.check_distance()
+            interface.set_line(7,'distance',front_distance)
                     
 if __name__ == '__main__' :
     control_values  = car.ControlValues()
@@ -73,5 +76,7 @@ if __name__ == '__main__' :
     car_thread.stop()
     sensor_thread.stop()
     
+    sleep(1)
+
     deinit_modules()
     
