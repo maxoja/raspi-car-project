@@ -11,6 +11,10 @@ def get_key_pressed() :
     __screen.refresh()
     return __key_map[key] if key in __key_map else key
 
+def set_line(line_id, tag, content) :
+    __screen.addstr(line_id,1, '[' + str(tag) + '] - ' + str(content))
+    __screen.refresh()
+
 def __init_screen() :
     screen = curses.initscr()
     curses.cbreak()
