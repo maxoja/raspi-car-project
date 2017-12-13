@@ -6,6 +6,8 @@ import curses
 from custom_thread import WhileTrueThread
 
 from time import sleep
+from time import time as current_time
+import math
 
 def deinit_modules() :
     car.deinit()
@@ -33,6 +35,9 @@ class CarThread (WhileTrueThread) :
     def __init__(self, control_values) :
         WhileTrueThread.__init__(self, 0.1)
         self.__control_values = control_values
+        self.__sway_counter = 0
+        self.__prev_time = current_time()
+        self.__sway_freq = 5
 
     def _loop(self) :
         direction = self.__control_values.get_direction()
@@ -42,6 +47,9 @@ class CarThread (WhileTrueThread) :
             if self.__control_values.get_distance() <= 6 :
                 car.turn_left(duty_cycle)
             else :
+                self.__sway_counter += (current_time() - self.__prev_time)*math.pi*self.__sway_freq
+                self.__prev_time = current_time()
+                turn_ratio = math.sin(self.__sway_counter)/4 * 0.5
                 car.move_forward(duty_cycle)
 ##        elif direction == 'backward' :
 ##            car.move_backward(duty_cycle)
