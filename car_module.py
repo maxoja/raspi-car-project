@@ -13,12 +13,11 @@ def turn_left(duty_cycle):
 def turn_right(duty_cycle):
     __set_duty_cycle_for_pins(duty_cycle, 0, 0, duty_cycle)
     
-
 def move_forward(duty_cycle):
     __set_duty_cycle_for_pins(duty_cycle, 0, duty_cycle, 0)
 
-def move_backward(duty_cycle):
-    __set_duty_cycle_for_pins(0, duty_cycle, 0, duty_cycle)
+##def move_backward(duty_cycle):
+##    __set_duty_cycle_for_pins(0, duty_cycle, 0, duty_cycle)
 
 def __set_duty_cycle(pin_id, dc) :
     pwm_pins[pin_id].ChangeDutyCycle(dc)

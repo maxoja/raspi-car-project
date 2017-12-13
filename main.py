@@ -20,7 +20,7 @@ class InputThread (WhileTrueThread) :
         key = interface.get_key_pressed()
     
         if key == 'up' :        self.__control_values.set_direction('forward')  #car.move_forward(duty_cycle)
-        elif key == 'down' :    self.__control_values.set_direction('backward') #car.move_backward(duty_cycle)
+##        elif key == 'down' :    self.__control_values.set_direction('backward') #car.move_backward(duty_cycle)
         elif key == 'left' :    self.__control_values.set_direction('left')     #car.turn_left(duty_cycle)
         elif key == 'right' :   self.__control_values.set_direction('right')    #car.turn_right(duty_cycle)
         elif key == 'space' :   self.__control_values.set_direction('none')         #car.stop()
@@ -37,11 +37,11 @@ class CarThread (WhileTrueThread) :
     def _loop(self) :
         direction = self.__control_values.get_direction()
         duty_cycle = self.__control_values.get_duty_cycle()
-        
+
         if direction == 'forward' :
             car.move_forward(duty_cycle)
-        elif direction == 'backward' :
-            car.move_backward(duty_cycle)
+##        elif direction == 'backward' :
+##            car.move_backward(duty_cycle)
         elif direction == 'left' :
             car.turn_left(duty_cycle)
         elif direction == 'right' :
