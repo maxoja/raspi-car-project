@@ -49,10 +49,10 @@ class CarThread (WhileTrueThread) :
         if direction == 'forward' :
             if self.__control_values.get_distance() <= self.__safe_distance :
                 turn_ratio = math.sin(self.__sway_counter)/2*self.__sway_amp + 0.5
-                if turn_ratio < 0.5 :
+##                if turn_ratio < 0.5 :
                     car.turn_left(duty_cycle)
-                else :
-                    car.turn_right(duty_cycle)
+##                else :
+##                    car.turn_right(duty_cycle)
             else :
                 if self.__prev_direction != 'forward' :
                     self.__sway_counter = 0
