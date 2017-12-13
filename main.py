@@ -55,7 +55,7 @@ class CarThread (WhileTrueThread) :
 ##                else :
 ##                    car.turn_right(duty_cycle)
             else :
-                if self.__prev_direction != 'forward' and self.__control_values.is_swaying():
+                if self.__prev_direction != 'forward' or not self.__control_values.is_swaying():
                     self.__sway_counter = 0
 
                 self.__sway_counter += (current_time() - self.__prev_time)*math.pi*self.__sway_freq
