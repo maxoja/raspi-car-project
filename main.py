@@ -61,7 +61,7 @@ class SonarSensorThread(WhileTrueThread):
         def _loop(self):
             front_distance = sensor.check_distance()
             interface.set_line(7,'distance',front_distance)
-            self.__sontrol_values.set_distance(front_distance)
+            self.__control_values.set_distance(front_distance)
                     
 if __name__ == '__main__' :
     control_values  = car.ControlValues()
