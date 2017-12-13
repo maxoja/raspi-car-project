@@ -2,8 +2,7 @@ import threading
 from time import sleep
 
 class WhileTrueThread(threading.Thread) :
-    
-    def __init__(self, interval) :
+    def __init__(self, interval = 0) :
         threading.Thread.__init__(self)
         self.__interval = interval
         self.__stop = False
