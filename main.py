@@ -3,6 +3,7 @@ import interface_module as interface
 import sonar_sensor_module as sensor
 import camera_module as cam
 from custom_thread import WhileTrueThread
+import sign_detection_module as detection
 
 import cv2
 from time import sleep
@@ -108,8 +109,9 @@ class SonarSensorThread(WhileTrueThread):
 
 class CamThread(WhileTrueThread):
     
-    def __init__(self):
+    def __init__(self, control_values):
         WhileTrueThread.__init__(self)
+        self.__control_values = control_values
 
     def _prepare(self) :
         self.__frame_count = 0
@@ -118,10 +120,16 @@ class CamThread(WhileTrueThread):
         raw_image = cam.capture()
         resized_image = cam.shrink_image(raw_image)
         flipped_image = cam.flip_up_down(resized_image)
+        flipped_image = cam.flip_left_right(resized_image)
         self.__frame_count += 1
+        interface.set_info('frame count', self.__frame_count)
 ##        cam.show_image(flipped_image)
 
-##        interface.set_info('frame count', self.__frame_count)
+        sign_direction = detection.identifyTrafficSign(flipped_image)
+
+        if sign_direction != 'none' :
+            self.__control_values.set_direction(sign_direction)
+            interface.set_info('direction', sign_direction)
         
         if cv2.waitKey(1) == 27 :
             self.stop()
@@ -133,7 +141,7 @@ def main() :
     input_thread    = InputThread       (control_values)
     car_thread      = CarThread         (control_values)
     sensor_thread   = SonarSensorThread (control_values)
-    camera_thread   = CamThread()
+    camera_thread   = CamThread         (control_values)
 
     input_thread.start()
     car_thread.start()
