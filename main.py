@@ -23,10 +23,10 @@ class InputThread (WhileTrueThread) :
     def _loop(self) :
         key = interface.get_key_pressed()
     
-        if key == 'i' :        self.__control_values.set_direction('forward')  #car.move_forward(duty_cycle)
-        elif key == 'k' :    self.__control_values.set_direction('backward') #car.move_backward(duty_cycle)
-        elif key == 'j' :    self.__control_values.set_direction('left')     #car.turn_left(duty_cycle)
-        elif key == 'l' :   self.__control_values.set_direction('right')    #car.turn_right(duty_cycle)
+        if key == 'i' :         self.__control_values.set_direction('forward')  #car.move_forward(duty_cycle)
+        elif key == 'k' :       self.__control_values.set_direction('backward') #car.move_backward(duty_cycle)
+        elif key == 'j' :       self.__control_values.set_direction('left')     #car.turn_left(duty_cycle)
+        elif key == 'l' :       self.__control_values.set_direction('right')    #car.turn_right(duty_cycle)
         elif key == 'space' :   self.__control_values.set_direction('none')     #car.stop()
         elif key == '1' :       self.__control_values.decrease_duty_cycle()     #duty_cycle -= 1
         elif key == '2' :       self.__control_values.increase_duty_cycle()     #duty_cycle += 1
