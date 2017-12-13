@@ -13,8 +13,21 @@ def turn_left(duty_cycle):
 def turn_right(duty_cycle):
     __set_duty_cycle_for_pins(duty_cycle, 0, 0, duty_cycle)
     
-def move_forward(duty_cycle):
-    __set_duty_cycle_for_pins(duty_cycle, 0, duty_cycle, 0)
+def move_forward(duty_cycle, split_ratio=0.5):
+    if split_ratio > 1 : split_ratio = 1
+    elif split_ratio < 0 : split_ratio = 0
+
+    if split_ratio < 0.5 :
+        left_ratio = split_ratio / 0.5
+    else :
+        left_ratio = 1
+
+    if split_ratio > 0.5 :
+        right_ratio = 1 - (right_ratio - 0.5)/0.5
+    else :
+        right_ratio = 1
+        
+    __set_duty_cycle_for_pins(duty_cycle*left_ratio, 0, duty_cycle*right_ratio, 0)
 
 ##def move_backward(duty_cycle):
 ##    __set_duty_cycle_for_pins(0, duty_cycle, 0, duty_cycle)
