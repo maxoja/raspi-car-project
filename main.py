@@ -13,7 +13,7 @@ def deinit_modules() :
 
 class InputThread (WhileTrueThread) :
     def __init__(self, control_values) :
-        WhileTrueThread.__init__(self, 0)
+        WhileTrueThread.__init__(self, 0.1)
         self.__control_values = control_values
 
     def _loop(self) :
@@ -54,19 +54,21 @@ class CarThread (WhileTrueThread) :
     
 
 class SonarSensorThread(WhileTrueThread):
-        def __init__(self) :
+        def __init__(self, control_values) :
             WhileTrueThread.__init__(self, 0.1)
+            self.__control_values = control_values
             
         def _loop(self):
             front_distance = sensor.check_distance()
             interface.set_line(7,'distance',front_distance)
+            self.__sontrol_values.set_distance(front_distance)
                     
 if __name__ == '__main__' :
     control_values  = car.ControlValues()
 
     input_thread    = InputThread       (control_values)
     car_thread      = CarThread         (control_values)
-    sensor_thread   = SonarSensorThread ()
+    sensor_thread   = SonarSensorThread (control_values)
 
     input_thread.start()
     car_thread.start()
@@ -79,4 +81,3 @@ if __name__ == '__main__' :
     sleep(1)
 
     deinit_modules()
-    
