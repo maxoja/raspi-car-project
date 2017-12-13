@@ -48,7 +48,11 @@ class CarThread (WhileTrueThread) :
 
         if direction == 'forward' :
             if self.__control_values.get_distance() <= self.__safe_distance :
-                car.turn_left(duty_cycle)
+                turn_ratio = math.sin(self.__sway_counter)/2*self.__sway_amp + 0.5
+                if turn_ratio < 0.5 :
+                    car.turn_left(duty_cycle)
+                else :
+                    car.turn_right(duty_cycle)
             else :
                 if self.__prev_direction != 'forward' :
                     self.__sway_counter = 0
@@ -74,7 +78,7 @@ class CarThread (WhileTrueThread) :
 
 class SonarSensorThread(WhileTrueThread):
         def __init__(self, control_values) :
-            WhileTrueThread.__init__(self, 0.1)
+            WhileTrueThread.__init__(self, 0)
             self.__control_values = control_values
             
         def _loop(self):
