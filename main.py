@@ -39,7 +39,10 @@ class CarThread (WhileTrueThread) :
         duty_cycle = self.__control_values.get_duty_cycle()
 
         if direction == 'forward' :
-            car.move_forward(duty_cycle)
+            if self.__control_values.get_distance <= 6 :
+                car.turn_left(duty_cycle)
+            else :
+                car.move_forward(duty_cycle)
 ##        elif direction == 'backward' :
 ##            car.move_backward(duty_cycle)
         elif direction == 'left' :
