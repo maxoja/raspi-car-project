@@ -13,14 +13,14 @@ def deinit_modules() :
 
 class InputThread (WhileTrueThread) :
     def __init__(self, control_values) :
-        WhileTrueThread.__init__(self, 0)
+        WhileTrueThread.__init__(self, 0.1)
         self.__control_values = control_values
 
     def _loop(self) :
         key = interface.get_key_pressed()
     
         if key == 'up' :        self.__control_values.set_direction('forward')  #car.move_forward(duty_cycle)
-        elif key == 'down' :    self.__control_values.set_direction('backward') #car.move_backward(duty_cycle)
+##        elif key == 'down' :    self.__control_values.set_direction('backward') #car.move_backward(duty_cycle)
         elif key == 'left' :    self.__control_values.set_direction('left')     #car.turn_left(duty_cycle)
         elif key == 'right' :   self.__control_values.set_direction('right')    #car.turn_right(duty_cycle)
         elif key == 'space' :   self.__control_values.set_direction('none')         #car.stop()
@@ -37,11 +37,14 @@ class CarThread (WhileTrueThread) :
     def _loop(self) :
         direction = self.__control_values.get_direction()
         duty_cycle = self.__control_values.get_duty_cycle()
-        
+
         if direction == 'forward' :
-            car.move_forward(duty_cycle)
-        elif direction == 'backward' :
-            car.move_backward(duty_cycle)
+            if self.__control_values.get_distance() <= 6 :
+                car.turn_left(duty_cycle)
+            else :
+                car.move_forward(duty_cycle)
+##        elif direction == 'backward' :
+##            car.move_backward(duty_cycle)
         elif direction == 'left' :
             car.turn_left(duty_cycle)
         elif direction == 'right' :
@@ -54,19 +57,21 @@ class CarThread (WhileTrueThread) :
     
 
 class SonarSensorThread(WhileTrueThread):
-        def __init__(self) :
+        def __init__(self, control_values) :
             WhileTrueThread.__init__(self, 0.1)
+            self.__control_values = control_values
             
         def _loop(self):
             front_distance = sensor.check_distance()
             interface.set_line(7,'distance',front_distance)
+            self.__control_values.set_distance(front_distance)
                     
 if __name__ == '__main__' :
     control_values  = car.ControlValues()
 
     input_thread    = InputThread       (control_values)
     car_thread      = CarThread         (control_values)
-    sensor_thread   = SonarSensorThread ()
+    sensor_thread   = SonarSensorThread (control_values)
 
     input_thread.start()
     car_thread.start()
@@ -79,4 +84,3 @@ if __name__ == '__main__' :
     sleep(1)
 
     deinit_modules()
-    

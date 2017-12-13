@@ -13,12 +13,11 @@ def turn_left(duty_cycle):
 def turn_right(duty_cycle):
     __set_duty_cycle_for_pins(duty_cycle, 0, 0, duty_cycle)
     
-
 def move_forward(duty_cycle):
     __set_duty_cycle_for_pins(duty_cycle, 0, duty_cycle, 0)
 
-def move_backward(duty_cycle):
-    __set_duty_cycle_for_pins(0, duty_cycle, 0, duty_cycle)
+##def move_backward(duty_cycle):
+##    __set_duty_cycle_for_pins(0, duty_cycle, 0, duty_cycle)
 
 def __set_duty_cycle(pin_id, dc) :
     pwm_pins[pin_id].ChangeDutyCycle(dc)
@@ -56,7 +55,11 @@ class ControlValues :
     def  __init__(self) :
         self.direction = 'none'
         self.duty_cycle = 50
-        
+        self.distance = None
+
+    def set_distance(self, distance) :
+        self.distance = distance
+
     def set_direction(self, direction) :
         self.direction = direction
 
@@ -76,6 +79,9 @@ class ControlValues :
 
     def get_direction(self) :
         return self.direction
+
+    def get_distance(self) :
+        return self.distance
 
 ## initialize ####
 pwm_frequency = 50
