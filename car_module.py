@@ -67,7 +67,7 @@ def __init_gpio_pins() :
 class ControlValues :
     def  __init__(self) :
         self.direction = 'none'
-        self.duty_cycle = 50
+        self.duty_cycle = 100
         self.distance = None
 
     def set_distance(self, distance) :
