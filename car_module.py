@@ -29,8 +29,8 @@ def move_forward(duty_cycle, split_ratio=0.5):
         
     __set_duty_cycle_for_pins(duty_cycle*left_ratio, 0, duty_cycle*right_ratio, 0)
 
-##def move_backward(duty_cycle):
-##    __set_duty_cycle_for_pins(0, duty_cycle, 0, duty_cycle)
+def move_backward(duty_cycle):
+    __set_duty_cycle_for_pins(0, duty_cycle, 0, duty_cycle)
 
 def __set_duty_cycle(pin_id, dc) :
     pwm_pins[pin_id].ChangeDutyCycle(dc)
