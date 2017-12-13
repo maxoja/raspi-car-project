@@ -37,20 +37,26 @@ class CarThread (WhileTrueThread) :
         self.__control_values = control_values
         self.__sway_counter = 0
         self.__prev_time = current_time()
-        self.__sway_freq = 5
+        self.__sway_freq = 1.6
+        self.__sway_amp = 0.8
+        self.__safe_distance = 7
+        self.__prev_direction = 'none'
 
     def _loop(self) :
         direction = self.__control_values.get_direction()
         duty_cycle = self.__control_values.get_duty_cycle()
 
         if direction == 'forward' :
-            if self.__control_values.get_distance() <= 6 :
+            if self.__control_values.get_distance() <= self.__safe_distance :
                 car.turn_left(duty_cycle)
             else :
+                if self.__prev_direction != 'forward' :
+                    self.__sway_counter = 0
+
                 self.__sway_counter += (current_time() - self.__prev_time)*math.pi*self.__sway_freq
                 self.__prev_time = current_time()
-                turn_ratio = math.sin(self.__sway_counter)/4 * 0.5
-                car.move_forward(duty_cycle)
+                turn_ratio = math.sin(self.__sway_counter)/2*self.__sway_amp + 0.5
+                car.move_forward(duty_cycle, turn_ratio)
 ##        elif direction == 'backward' :
 ##            car.move_backward(duty_cycle)
         elif direction == 'left' :
@@ -61,6 +67,8 @@ class CarThread (WhileTrueThread) :
             car.stop()
         else :
             pass # unknown direction
+        
+        self.__prev_direction = direction
 
     
 
