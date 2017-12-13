@@ -28,6 +28,7 @@ class InputThread (WhileTrueThread) :
         elif key == 'space' :   self.__control_values.set_direction('none')         #car.stop()
         elif key == '1' :       self.__control_values.decrease_duty_cycle()     #duty_cycle -= 1
         elif key == '2' :       self.__control_values.increase_duty_cycle()     #duty_cycle += 1
+        elif key == 's' :       self.__control_values.set_swaying(not self.__control_values.is_swaying())
         elif key == 'q' :       self.stop()
         else :                  pass #unknown key detected
 
@@ -54,7 +55,7 @@ class CarThread (WhileTrueThread) :
 ##                else :
 ##                    car.turn_right(duty_cycle)
             else :
-                if self.__prev_direction != 'forward' :
+                if self.__prev_direction != 'forward' and self.__control_values.is_swaying():
                     self.__sway_counter = 0
 
                 self.__sway_counter += (current_time() - self.__prev_time)*math.pi*self.__sway_freq

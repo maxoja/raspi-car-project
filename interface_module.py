@@ -40,6 +40,7 @@ __key_map = {
     49 : '1',
     50 : '2',
     ord('q') : 'q'
+    ord('s') : 's'
 }
 
 __screen = __init_screen()
