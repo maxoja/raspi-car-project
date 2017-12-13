@@ -23,10 +23,10 @@ class InputThread (WhileTrueThread) :
     def _loop(self) :
         key = interface.get_key_pressed()
     
-        if key == 'up' :        self.__control_values.set_direction('forward')  #car.move_forward(duty_cycle)
-        elif key == 'down' :    self.__control_values.set_direction('backward') #car.move_backward(duty_cycle)
-        elif key == 'left' :    self.__control_values.set_direction('left')     #car.turn_left(duty_cycle)
-        elif key == 'right' :   self.__control_values.set_direction('right')    #car.turn_right(duty_cycle)
+        if key == 'i' :        self.__control_values.set_direction('forward')  #car.move_forward(duty_cycle)
+        elif key == 'k' :    self.__control_values.set_direction('backward') #car.move_backward(duty_cycle)
+        elif key == 'j' :    self.__control_values.set_direction('left')     #car.turn_left(duty_cycle)
+        elif key == 'l' :   self.__control_values.set_direction('right')    #car.turn_right(duty_cycle)
         elif key == 'space' :   self.__control_values.set_direction('none')     #car.stop()
         elif key == '1' :       self.__control_values.decrease_duty_cycle()     #duty_cycle -= 1
         elif key == '2' :       self.__control_values.increase_duty_cycle()     #duty_cycle += 1
@@ -41,6 +41,7 @@ class InputThread (WhileTrueThread) :
         interface.set_info('auto', self.__control_values.is_auto())
 
 class CarThread (WhileTrueThread) :
+    
     def __init__(self, control_values) :
         WhileTrueThread.__init__(self, 0.1)
         self.__control_values = control_values
@@ -55,11 +56,20 @@ class CarThread (WhileTrueThread) :
         direction = self.__control_values.get_direction()
         duty_cycle = self.__control_values.get_duty_cycle()
         is_auto = self.__control_values.is_auto()
-        
-        if direction == 'forward' :
+
+        if is_auto :
             if self.__control_values.get_distance() <= self.__safe_distance :
                 car.turn_left(duty_cycle)
             else :
+                if not self.__control_values.is_swaying() :
+                    car.move_forward(duty_cycle)
+                else :
+                    self.__sway_counter += (current_time() - self.__prev_time)*math.pi*self.__sway_freq
+                    self.__prev_time = current_time()
+                    turn_ratio = math.sin(self.__sway_counter)/2*self.__sway_amp + 0.5
+                    car.move_forward(duty_cycle, turn_ratio)
+        else :
+            if direction == 'forward' :
                 if not self.__control_values.is_swaying() :
                     car.move_forward(duty_cycle)
                 else : 
@@ -70,16 +80,16 @@ class CarThread (WhileTrueThread) :
                     self.__prev_time = current_time()
                     turn_ratio = math.sin(self.__sway_counter)/2*self.__sway_amp + 0.5
                     car.move_forward(duty_cycle, turn_ratio)
-        elif direction == 'backward' :
-            car.move_backward(duty_cycle)
-        elif direction == 'left' :
-            car.turn_left(duty_cycle)
-        elif direction == 'right' :
-            car.turn_right(duty_cycle)
-        elif direction == 'none' :
-            car.stop()
-        else :
-            pass # unknown direction
+            elif direction == 'backward' :
+                car.move_backward(duty_cycle)
+            elif direction == 'left' :
+                car.turn_left(duty_cycle)
+            elif direction == 'right' :
+                car.turn_right(duty_cycle)
+            elif direction == 'none' :
+                car.stop()
+            else :
+                pass # unknown direction
         
         self.__prev_direction = direction
 

@@ -55,7 +55,7 @@ def __init_screen() :
     __screen.addnstr(1, 0, " to quit         : press 'q'", get_width())
     __screen.addnstr(2, 0, " to toggle swing : press 's'", get_width())
     __screen.addnstr(3, 0, " to toggle auto  : press 'a'", get_width())
-    __screen.addnstr(4, 0, " to control      : use arrow keys and spacebar", get_width())
+    __screen.addnstr(4, 0, " to control      : use 'i' 'j' 'k' 'l' and spacebar", get_width())
     __screen.addnstr(5, 0, " to adjust speed : press '1'/'2' to decrease/increase duty cycle limit", get_width())
 
     __screen.addnstr(7, 0, " [ - INFO - ]", get_width())
@@ -74,7 +74,11 @@ __key_map = {
     50 : '2',
     ord('q') : 'q',
     ord('s') : 's',
-    ord('a') : 'a'
+    ord('a') : 'a',
+    ord('i') : 'i',
+    ord('j') : 'j',
+    ord('k') : 'k',
+    ord('l') : 'l'
 }
 
 __screen = None
