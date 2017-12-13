@@ -51,6 +51,7 @@ class CarThread (WhileTrueThread) :
         self.__sway_amp = 0.8
         self.__safe_distance = 8
         self.__prev_direction = 'none'
+        self.__outbound_distance = 1100
 
     def _loop(self) :
         direction = self.__control_values.get_direction()
@@ -58,7 +59,7 @@ class CarThread (WhileTrueThread) :
         is_auto = self.__control_values.is_auto()
 
         if is_auto :
-            if self.__control_values.get_distance() <= self.__safe_distance :
+            if self.__control_values.get_distance() <= self.__safe_distance or self.__control_values.get_distance() >= self.__outbound_distance :
                 car.turn_left(duty_cycle)
             else :
                 if not self.__control_values.is_swaying() :
