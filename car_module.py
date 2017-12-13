@@ -23,7 +23,7 @@ def move_forward(duty_cycle, split_ratio=0.5):
         left_ratio = 1
 
     if split_ratio > 0.5 :
-        right_ratio = 1 - (right_ratio - 0.5)/0.5
+        right_ratio = 1 - (split_ratio - 0.5)/0.5
     else :
         right_ratio = 1
         
