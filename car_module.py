@@ -77,12 +77,15 @@ class ControlValues :
         
     def is_swaying(self) :
         return self.swaying
+    
+    def toggle_mode(self) :
+        if self.mode == 'drive' :
+            self.mode = 'auto'
+        else :
+            self.mode = 'drive'
 
-    def set_swaying(self, value) :
-        self.swaying = value
-
-    def set_mode(self, value) :
-        self.mode = value
+    def toggle_swaying(self) :
+        self.swaying = not self.swaying
         
     def set_distance(self, distance) :
         self.distance = distance
