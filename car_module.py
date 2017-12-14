@@ -1,4 +1,3 @@
-import RPi.GPIO as GPIO
 from time import sleep
 
 def deinit() :
@@ -49,10 +48,17 @@ def __init_pwm_pin(pin_id) :
     pwm_pins[pin_id].start(0)
 
 def __init_output_pin(pin_id) :
-    GPIO.setup(pin_id, GPIO.OUT)
+    try :
+        GPIO.setup(pin_id, GPIO.OUT)
+    except :
+        pass
     
-def __init_gpio_pins() :
+def init_gpio_pins() :
+    import RPi.GPIO as _GPIO
+    global GPIO
+    GPIO = _GPIO
     GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)
 
     __init_output_pin(pin_left_a)
     __init_output_pin(pin_left_b)
@@ -121,5 +127,3 @@ pin_left_a = 13
 pin_left_b = 15
 pin_right_a = 7
 pin_right_b = 11
-
-__init_gpio_pins()

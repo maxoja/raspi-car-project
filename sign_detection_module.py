@@ -30,14 +30,13 @@ def findTrafficSign(frame):
     kernel = np.ones((3,3),np.uint8)
     # extract binary image with active blue regions
     mask = cv2.inRange(hsv, lower_blue, upper_blue)
-
-
-    #debug
-##    cv2.imshow('', mask)
     
     # morphological operations
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+    
+    #debug
+##    cv2.imshow('processed mask', mask)
     
     # find contours in the mask
     cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
@@ -75,10 +74,17 @@ def findTrafficSign(frame):
     # draw contour of the found rectangle on  the original image
     if largestArea > frameArea*0.02:
         cv2.drawContours(frame,[largestRect],0,(0,0,255),2)
+        
+        #debug
+##        cv2.imshow('contour', frame)
 
     #if largestRect is not None:
         # cut and warp interesting area
         warped = four_point_transform(mask, [largestRect][0])
+
+        
+        #debug
+##        cv2.imshow('warped', warped)
         
         # use function to detect the sign on the found rectangle
         detectedTrafficSign = __identifyTrafficSign(warped)
