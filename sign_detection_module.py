@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
+import imutils
 from imutils.perspective import four_point_transform
 
-def __findTrafficSign(frame):
+def findTrafficSign(frame):
     '''
     This function find blobs with blue color on the image.
     After blobs were found it detects the largest square blob, that must be the sign.
@@ -14,6 +15,8 @@ def __findTrafficSign(frame):
     #todo : use cam module to resize
     frame = imutils.resize(frame, width=500)
     frameArea = frame.shape[0]*frame.shape[1]
+
+    cv2.imshow('resized frame', frame)
     
     # convert color image to HSV color scheme
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -34,7 +37,7 @@ def __findTrafficSign(frame):
     
     # define variables to hold values during loop
     largestArea = 0
-    largestRect = None
+    largestRect = 'none'
     
     # only proceed if at least one contour was found
     if len(cnts) > 0:
@@ -68,20 +71,15 @@ def __findTrafficSign(frame):
         warped = four_point_transform(mask, [largestRect][0])
         
         # use function to detect the sign on the found rectangle
-        detectedTrafficSign = identifyTrafficSign(warped)
+        detectedTrafficSign = __identifyTrafficSign(warped)
 
-        # write the description of the sign on the original image
-        cv2.putText(frame, detectedTrafficSign, tuple(largestRect[0]), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 0), 2)
+    return detectedTrafficSign
 
-    return frame
-
-def identifyTrafficSign(frame):
+def __identifyTrafficSign(image):
     '''
     In this function we select some ROI in which we expect to have the sign parts. If the ROI has more active pixels than threshold we mark it as 1, else 0
     After path through all four regions, we compare the tuple of ones and zeros with keys in dictionary SIGNS_LOOKUP
     '''
-
-    image = __findTrafficSign(frame)
     
     # define the dictionary of signs segments so we can identify
     # each signs on the image
@@ -98,9 +96,9 @@ def identifyTrafficSign(frame):
     # (roiH, roiW) = roi.shape
     #subHeight = thresh.shape[0]/10
     #subWidth = thresh.shape[1]/10
-    (subHeight, subWidth) = np.divide(image.shape, 10)
-    subHeight = int(subHeight)
-    subWidth = int(subWidth)
+    #(subHeight, subWidth) = np.divide(image.shape, 10)
+    subHeight = int(image.shape[0]/10)
+    subWidth = int(image.shape[1]/10)
 
     # mark the ROIs borders on the image
     cv2.rectangle(image, (subWidth, 4*subHeight), (3*subWidth, 9*subHeight), (0,255,0),2) # left block

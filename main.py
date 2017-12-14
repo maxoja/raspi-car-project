@@ -121,14 +121,14 @@ class CamThread(WhileTrueThread):
         raw_image = cam.capture()
         resized_image = cam.shrink_image(raw_image)
         flipped_image = cam.flip_up_down(resized_image)
-        flipped_image = cam.flip_left_right(resized_image)
+        flipped_image = cam.flip_left_right(flipped_image)
         self.__frame_count += 1
         interface.set_info('frame count', self.__frame_count)
-##        cam.show_image(flipped_image)
+        
+        sign_direction = detection.findTrafficSign(flipped_image)
+        interface.set_info('detection', sign_direction)
 
-        sign_direction = detection.identifyTrafficSign(flipped_image)
-
-        if sign_direction != 'none' :
+        if sign_direction != 'none' and sign_direction != None :
             self.__control_values.set_direction(sign_direction)
             interface.set_info('direction', sign_direction)
         
