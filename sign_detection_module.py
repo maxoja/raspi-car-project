@@ -31,7 +31,7 @@ def findTrafficSign(frame):
     # extract binary image with active blue regions
     mask = cv2.inRange(hsv, lower_blue, upper_blue)
 
-    
+
     #debug
 ##    cv2.imshow('', mask)
     

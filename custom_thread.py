@@ -47,8 +47,9 @@ class InputThread (WhileTrueThread) :
 
     def _loop(self) :
         key = interface.get_key_pressed()
+        current_mode = self.__control_values.get_mode()
 
-        if mode == 'drive' :
+        if current_mode == 'drive' :
             #keys that available on drive mode only
             if key == 'i' :         self.__control_values.set_direction('forward')  #car.move_forward(duty_cycle)
             elif key == 'k' :       self.__control_values.set_direction('backward') #car.move_backward(duty_cycle)
@@ -178,7 +179,7 @@ class CamThread(WhileTrueThread):
         self.__frame_count = 0
 
     def _loop(self):
-        if self.__control_values.get_mode() != 'sign' :
+        if self.__control_values.get_mode() != 'auto' :
             return
         
         raw_image = cam.capture()
