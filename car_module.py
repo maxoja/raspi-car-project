@@ -70,10 +70,10 @@ class ControlValues :
         self.duty_cycle = 100
         self.distance = None
         self.swaying = True
-        self.auto = False
+        self.mode = 'drive'
 
-    def is_auto(self) :
-        return self.auto
+    def get_mode(self) :
+        return self.mode
         
     def is_swaying(self) :
         return self.swaying
@@ -81,8 +81,8 @@ class ControlValues :
     def set_swaying(self, value) :
         self.swaying = value
 
-    def set_auto(self, value) :
-        self.auto = value
+    def set_mode(self, value) :
+        self.mode = value
         
     def set_distance(self, distance) :
         self.distance = distance

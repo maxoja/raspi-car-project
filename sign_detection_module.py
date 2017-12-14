@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import imutils
 from imutils.perspective import four_point_transform
+import camera_module as cam
 
 def findTrafficSign(frame):
     '''
@@ -15,8 +16,12 @@ def findTrafficSign(frame):
     #todo : use cam module to resize
     frame = imutils.resize(frame, width=500)
     frameArea = frame.shape[0]*frame.shape[1]
+    
+    frame = cam.flip_up_down(frame)
+    frame = cam.flip_left_right(frame)
 
-    cv2.imshow('resized frame', frame)
+    #debug
+##    cv2.imshow('resized frame', frame)
     
     # convert color image to HSV color scheme
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -25,10 +30,15 @@ def findTrafficSign(frame):
     kernel = np.ones((3,3),np.uint8)
     # extract binary image with active blue regions
     mask = cv2.inRange(hsv, lower_blue, upper_blue)
+
+    
+    #debug
+##    cv2.imshow('', mask)
+    
     # morphological operations
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-
+    
     # find contours in the mask
     cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
     
@@ -37,7 +47,7 @@ def findTrafficSign(frame):
     
     # define variables to hold values during loop
     largestArea = 0
-    largestRect = 'none'
+    largestRect = None
     
     # only proceed if at least one contour was found
     if len(cnts) > 0:
@@ -84,10 +94,10 @@ def __identifyTrafficSign(image):
     # define the dictionary of signs segments so we can identify
     # each signs on the image
     SIGNS_LOOKUP = {
-        (1, 0, 0, 1): 'right', # turnRight
-        (0, 0, 1, 1): 'left', # turnLeft
-        (0, 1, 0, 1): 'forward', # moveStraight
-        (1, 0, 1, 1): 'backward', # turnBack
+        (1, 0, 0, 1): 'right',      # turnRight sign
+        (0, 0, 1, 1): 'left',       # turnLeft sign
+        (0, 1, 0, 1): 'forward',    # moveStraight sign
+        (1, 0, 1, 1): 'none',       # turnBack sign
     }
 
     THRESHOLD = 150
@@ -124,6 +134,6 @@ def __identifyTrafficSign(image):
     if segments in SIGNS_LOOKUP:
         return SIGNS_LOOKUP[segments]
     else:
-        return 'none'
+        return None
 
 

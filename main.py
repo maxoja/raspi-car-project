@@ -31,15 +31,22 @@ class InputThread (WhileTrueThread) :
         elif key == 'space' :   self.__control_values.set_direction('none')     #car.stop()
         elif key == '1' :       self.__control_values.decrease_duty_cycle()     #duty_cycle -= 1
         elif key == '2' :       self.__control_values.increase_duty_cycle()     #duty_cycle += 1
+        elif key == 'a' :
+            current_mode = self.__control_values.get_mode()
+            if current_mode == 'drive' :
+                self.__control_values.set_mode('sign')
+            elif current_mode == 'sign' :
+                self.__control_values.set_mode('auto')
+            else :
+                self.__control_values.set_mode('drive')
         elif key == 's' :       self.__control_values.set_swaying(not self.__control_values.is_swaying())
-        elif key == 'a' :       self.__control_values.set_auto(not self.__control_values.is_auto())
         elif key == 'q' :       self.stop()
         else :                  pass #unknown key detected
 
         interface.set_info('direction', self.__control_values.get_direction())
-        interface.set_info('duty cycle', self.__control_values.get_duty_cycle())
+        interface.set_info('duty cycle',self.__control_values.get_duty_cycle())
         interface.set_info('sway move', self.__control_values.is_swaying())
-        interface.set_info('auto', self.__control_values.is_auto())
+        interface.set_info('mode',      self.__control_values.get_mode())
 
 class CarThread (WhileTrueThread) :
     
@@ -55,33 +62,45 @@ class CarThread (WhileTrueThread) :
         self.__outbound_distance = 1100
 
     def _loop(self) :
-        direction = self.__control_values.get_direction()
-        duty_cycle = self.__control_values.get_duty_cycle()
-        is_auto = self.__control_values.is_auto()
+        control_values  = self.__control_values
+        direction       = control_values.get_direction()
+        duty_cycle      = control_values.get_duty_cycle()
+        mode            = control_values.get_mode()
+        is_swaying      = control_values.is_swaying()
+        distance        = control_values.get_distance()
 
-        if is_auto :
-            if self.__control_values.get_distance() <= self.__safe_distance or self.__control_values.get_distance() >= self.__outbound_distance :
+        #auto drive mode
+        if mode == 'auto' :
+            too_close  = distance <= self.__safe_distance
+            outbound   = distance >= self.__outbound_distance
+            
+            if too_close or outbound : 
                 car.turn_left(duty_cycle)
             else :
-                if not self.__control_values.is_swaying() :
-                    car.move_forward(duty_cycle)
+                if not is_swaying :
+                    turn_ratio = 0.5
                 else :
                     self.__sway_counter += (current_time() - self.__prev_time)*math.pi*self.__sway_freq
                     self.__prev_time = current_time()
                     turn_ratio = math.sin(self.__sway_counter)/2*self.__sway_amp + 0.5
-                    car.move_forward(duty_cycle, turn_ratio)
-        else :
+
+                car.move_forward(duty_cycle, turn_ratio)
+
+        #control drive / sign recognition mode
+        elif mode == 'drive' or mode == 'sign' :
             if direction == 'forward' :
-                if not self.__control_values.is_swaying() :
-                    car.move_forward(duty_cycle)
-                else : 
+                if not is_swaying :
+                    turn_ratio = 0.5
+                else :
                     if self.__prev_direction != 'forward' :
                         self.__sway_counter = 0
-
+                        
                     self.__sway_counter += (current_time() - self.__prev_time)*math.pi*self.__sway_freq
                     self.__prev_time = current_time()
                     turn_ratio = math.sin(self.__sway_counter)/2*self.__sway_amp + 0.5
-                    car.move_forward(duty_cycle, turn_ratio)
+
+                car.move_forward(duty_cycle, turn_ratio)
+                    
             elif direction == 'backward' :
                 car.move_backward(duty_cycle)
             elif direction == 'left' :
@@ -118,19 +137,22 @@ class CamThread(WhileTrueThread):
         self.__frame_count = 0
 
     def _loop(self):
+        if self.__control_values.get_mode() != 'sign' :
+            return
+        
         raw_image = cam.capture()
-        resized_image = cam.shrink_image(raw_image)
-        flipped_image = cam.flip_up_down(resized_image)
-        flipped_image = cam.flip_left_right(flipped_image)
         self.__frame_count += 1
         interface.set_info('frame count', self.__frame_count)
         
-        sign_direction = detection.findTrafficSign(flipped_image)
+        sign_direction = detection.findTrafficSign(raw_image)
         interface.set_info('detection', sign_direction)
 
-        if sign_direction != 'none' and sign_direction != None :
+        if sign_direction == None :
+            pass
+        else :
             self.__control_values.set_direction(sign_direction)
-            interface.set_info('direction', sign_direction)
+
+        interface.set_info('direction', self.__control_values.get_direction())
         
         if cv2.waitKey(1) == 27 :
             self.stop()
