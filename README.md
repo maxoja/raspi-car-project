@@ -22,7 +22,7 @@ Warakorn Jetlohasiri            59090038
 ## Presentation video for submission
 https://www.youtube.com/edit?o=U&video_id=ryWFRzGuom0
 
-## Opensource reference
-https://github.com/nikgens/TankRobotProject/tree/master/signRecognition
-https://github.com/alaudet/hcsr04sensor ( must modify to use GPIO BOARD mode )
+# Opensource reference
+- https://github.com/nikgens/TankRobotProject/tree/master/signRecognition
+- https://github.com/alaudet/hcsr04sensor ( must modify to use GPIO BOARD mode )
 
