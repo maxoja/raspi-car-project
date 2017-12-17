@@ -1,4 +1,3 @@
-import RPi.GPIO as GPIO
 from time import sleep
 
 def deinit() :
@@ -49,10 +48,17 @@ def __init_pwm_pin(pin_id) :
     pwm_pins[pin_id].start(0)
 
 def __init_output_pin(pin_id) :
-    GPIO.setup(pin_id, GPIO.OUT)
+    try :
+        GPIO.setup(pin_id, GPIO.OUT)
+    except :
+        pass
     
-def __init_gpio_pins() :
+def init_gpio_pins() :
+    import RPi.GPIO as _GPIO
+    global GPIO
+    GPIO = _GPIO
     GPIO.setmode(GPIO.BOARD)
+    GPIO.setwarnings(False)
 
     __init_output_pin(pin_left_a)
     __init_output_pin(pin_left_b)
@@ -70,19 +76,22 @@ class ControlValues :
         self.duty_cycle = 100
         self.distance = None
         self.swaying = True
-        self.auto = False
+        self.mode = 'drive'
 
-    def is_auto(self) :
-        return self.auto
+    def get_mode(self) :
+        return self.mode
         
     def is_swaying(self) :
         return self.swaying
+    
+    def toggle_mode(self) :
+        if self.mode == 'drive' :
+            self.mode = 'auto'
+        else :
+            self.mode = 'drive'
 
-    def set_swaying(self, value) :
-        self.swaying = value
-
-    def set_auto(self, value) :
-        self.auto = value
+    def toggle_swaying(self) :
+        self.swaying = not self.swaying
         
     def set_distance(self, distance) :
         self.distance = distance
@@ -118,5 +127,3 @@ pin_left_a = 13
 pin_left_b = 15
 pin_right_a = 7
 pin_right_b = 11
-
-__init_gpio_pins()
