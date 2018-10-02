@@ -3,6 +3,8 @@ import interface_module as interface
 import sonar_sensor_module as sensor
 import camera_module as cam
 import sign_detection_module as detection
+import camera_pan_module as pan
+import constant as const
 
 import threading
 from time import sleep
@@ -64,7 +66,8 @@ class InputThread (WhileTrueThread) :
         elif key == 'a' :
                                 self.__control_values.toggle_mode()
                                 self.__control_values.set_direction('none')
-        else :                  pass #unknown key detected
+        else :
+            pass #unknown key detected
 
         interface.set_info('direction', self.__control_values.get_direction())
         interface.set_info('duty cycle',self.__control_values.get_duty_cycle())
@@ -198,3 +201,54 @@ class CamThread(WhileTrueThread):
         
         if cv2.waitKey(1) == 27 :
             self.stop()
+
+
+#Thread class support ting camera tiliting and panning
+class CameraPanningThread(WhileTrueThread):
+    def __init__(self, control_values):
+        WhileTrueThread.__init__(self, 0.1)
+        self.__control_values = control_values
+        self.__horizontal_angle = 90
+        self.__vertical_angle = 90
+
+        self.horizontal_Servo = pan.Servo(const.servoHorizontal)
+        self.vertical_Servo = pan.Servo(const.servoVertical)
+
+    def _loop(self):
+        control_values = self.__control_values
+        self.__horizontaL_angle = control_values.get_horizontal_angle()
+        self.__vertical_angle = control_values.get_vertical_angle()
+        mode = control_values.get_mode()
+
+        #Handle if the angle is negative
+        if (self.__horizontaL_angle < 0 or self.__vertical_angle < 0):
+            self.__vertical_angle *= -1
+            self.__horizontaL_angle *= -1
+
+        #Handle if the angle goes beyond 360 deg
+        if(self.__vertical_angle > 360 or self.__horizontaL_angle > 360):
+            self.__vertical_angle = self.__vertical_angle % 360
+            self.__horizontaL_angle = self.__horizontaL_angle % 50
+
+        if(mode == 'auto'):
+            self.horizontal_Servo.setDefaultAngle()
+            self.vertical_Servo.setDefaultAngle()
+
+        elif(mode == 'drive'):
+            #Suppose to detect both vertical and horizontal angle from VRDevice
+            if(campan == 'up'):
+                pass
+            if(campan == 'down'):
+                pass
+            if(campan == 'right'):
+                pass
+            if(campan== 'left'):
+                pass
+
+
+
+
+
+
+
+
